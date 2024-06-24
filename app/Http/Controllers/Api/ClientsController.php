@@ -53,23 +53,58 @@ class ClientsController extends Controller
         return response()->json([
             'message'=>'Client Added Succcessfully',
             'data' =>new ClientsResource($clients)
+        ], 200);
+        
+    }
+
+
+// check for the this method, it might have some issues
+    public function show(Clients $client){
+        return new ClientsResource($client);
+    }
+
+
+    public function update(Request $request, Clients $client){
+        $validator = Validator::make($request->all(),[
+            'fullName' => 'required|string|max:255',
+            'address' => 'required',
+            'mobileNumber' => 'required|string',
+            'email' => 'required|string',
+            'nic' => 'required|string',
         ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'message'=>'All Fields are mandentory',
+                'error'=>$validator->messages(),
+
+            ], 422);
+        }
         
+        $client->update([
+            'fullName' => $request->fullName,
+            'address' => $request->address,
+            'mobileNumber' => $request->mobileNumber,
+            'email' => $request->email,
+            'nic' => $request->nic,
+        ]);
+        return response()->json([
+            'message'=>'Client updated Succcessfully',
+            'data' =>new ClientsResource($client)
+        ], 200);
+
+
+
     }
 
-
-
-    public function show(){
-        
-    }
-
-
-    public function update(){
-        
-    }
-
-    public function destroy(){
-        
+    
+// ++++++++++++++++++++++++++++++++++++++++
+    //please watch the error handling on the video++++++++++++++++++++
+    public function destroy(Clients $client){
+        $client->delete();
+        return response()->json([
+            'message'=>'Client Deleted Succcessfully',
+        ], 200);
     }
 
 
